@@ -75,6 +75,7 @@ DISABLE_VS_WARNINGS(4267)
 // used to overestimate the block reward when estimating a per kB to use
 #define BLOCK_REWARD_OVERESTIMATE   ((uint64_t)(16000000000))
 #define MAINNET_HARDFORK_V3_HEIGHT  ((uint64_t)(116520))
+#define TESTNET_HARDFORK_V4_HEIGHT  ((uint64_t)(104160))
 
 static const struct {
   uint8_t version;
@@ -96,7 +97,8 @@ static const struct {
 } testnet_hard_forks[] = {
   { 1, 1, 0, 1482806500 },
   { 2, 5150, 0, 1497181713 },
-  { 3, 103580, 0, 1522540800 } // April 01, 2018
+  { 3, 103580, 0, 1522540800 }, // April 01, 2018
+  { 4, TESTNET_HARDFORK_V4_HEIGHT, 0, 1522540800 }
 };
 static const uint64_t testnet_hard_fork_version_1_till = (uint64_t)-1;
 
@@ -680,6 +682,10 @@ difficulty_type Blockchain::get_difficulty_for_next_block()
   // Reset network hashrate to 2.0 MHz when hardfork v3 comes
   if (!m_testnet && (uint64_t)height >= MAINNET_HARDFORK_V3_HEIGHT && (uint64_t)height <= MAINNET_HARDFORK_V3_HEIGHT + (uint64_t)DIFFICULTY_BLOCKS_COUNT_V2){
     return (difficulty_type) 480000000;
+  }
+
+  if (m_testnet && (uint64_t)height >= TESTNET_HARDFORK_V4_HEIGHT && (uint64_t)height <= TESTNET_HARDFORK_V4_HEIGHT + (uint64_t)DIFFICULTY_BLOCKS_COUNT_V2){
+    return (difficulty_type) 2400;
   }
 
   size_t difficult_block_count = get_current_hard_fork_version() < 2 ? DIFFICULTY_BLOCKS_COUNT : DIFFICULTY_BLOCKS_COUNT_V2;
